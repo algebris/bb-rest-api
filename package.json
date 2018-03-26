@@ -16,7 +16,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "nodemon index.js | ./node_modules/bunyan/bin/bunyan -o short",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

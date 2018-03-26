@@ -9,5 +9,5 @@ let routes = requireAll({
 
 module.exports = app => {
   app.get(`/`, (req, res) => res.json({status: 0, message: 'BB API alive!'}));
-  app.use(cfg.apiPrefix + '/addr', routes.addr);
+  app.use(cfg.apiPrefix + '/', routes.addr);
 };
