@@ -36,8 +36,8 @@ router.get('/listunspent/:addr', async (req, res, next) => {
         }
         acc.push({ 
           tx_hash, 
-          tx_pos, 
-          value: convertFromSatoshi(val.amount),
+          tx_pos: parseInt(tx_pos, 10),
+          value: val.amount,
           height: val.height 
         });
       },[])
