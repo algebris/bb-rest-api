@@ -22,13 +22,41 @@ router.get('/balance/:addr', async (req, res, next) => {
 });
 
 router.get('/listunspent/:addr', async (req, res, next) => {
-  let data = await db.client.lrange(`addr.utxo:${req.params.addr}`, 0, -1);
+  let data = await db.client.sort(`addr.utxo:${req.params.addr} BY utxo:*->time GET utxo:*->json`.split(' '));
+  try {
+    data = _.map(data,  JSON.parse);
+  } catch(err) {
+    log.error(err);
+    data = null;
+  }
   
   if(data === null) {
     res.json({err: 'Unknown address'});
   } else {
+    const mapKeys = {
+      'txid':'tx_hash',
+      'n':'tx_pos',
+      'val':'value',
+      'height':'height'
+    };
+    const makeObj = obj => _.chain(obj)
+      .pick(['txid', 'n', 'val', 'height'])
+      .mapKeys((v, k) => mapKeys[k])
+      .value();
+
+    data = _.map(data, makeObj);
     res.json(data);
   }
+});
+
+router.get('/height', async (req, res, next) => {
+  let hash = await db.client.zrange('block-chain', -1, -1);
+  hash = hash.shift() || 0;
+  
+  const height = hash ?
+    await db.client.zrank('block-chain', hash) : 0;
+    
+  res.json({height, hash});
 });
 
 module.exports = router;
