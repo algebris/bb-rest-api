@@ -8,8 +8,10 @@ const db = require('../utils/db');
 const convertFromSatoshi = value => parseInt(value) / 100000000;
 
 router.get('/balance/:addr', async (req, res, next) => {
-  const data = await db.client.hmget(`addr:${req.params.addr}`, ['sent', 'received', 'staked', 'balance',]);
-  if(data === null) {
+  let data = await db.client.hmget(`addr:${req.params.addr}`, ['sent', 'received', 'staked', 'balance',]);
+  data = _.compact(data);
+
+  if(_.isEmpty(data)) {
     res.status(400).json({err: 'Unknown address'});
   } else {
     res.json({
