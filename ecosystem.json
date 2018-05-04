@@ -1,0 +1,12 @@
+{
+  "apps": [{
+    "name": "rest-api",
+    "script": "app.js",
+    "watch": false,
+    "cwd": "/srv/bb-rest-api",
+    "out_file": "log/rest-api.stdout.log",
+    "env": {
+      "NODE_ENV": "production"
+    }
+  }]
+}

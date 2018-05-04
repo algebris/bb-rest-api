@@ -22,4 +22,3 @@ require('./routes')(app);
 
 // Bind to a port
 app.listen(cfg.port);
-log.info('Worker %d running!', cluster.worker.id);
