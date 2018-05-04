@@ -6,6 +6,8 @@ const log = bunyan.createLogger({name: 'api.addrRouter'});
 const db = require('../utils/db');
 
 const convertFromSatoshi = value => parseInt(value) / 100000000;
+const RPC_HEADER = {api_status: "success", jsonrpc: "2.0"};
+const wrapToJsonRPC = result =>  _.assign(RPC_HEADER, {id: Date.now(), result});
 
 router.get('/balance/:addr', async (req, res, next) => {
   let data = await db.client.hmget(`addr:${req.params.addr}`, ['sent', 'received', 'staked', 'balance',]);
@@ -14,12 +16,14 @@ router.get('/balance/:addr', async (req, res, next) => {
   if(_.isEmpty(data)) {
     res.status(400).json({err: 'Unknown address'});
   } else {
-    res.json({
-      sent: convertFromSatoshi(data[0]),
-      received: convertFromSatoshi(data[1]), 
-      staked: convertFromSatoshi(data[2]),
-      balance: convertFromSatoshi(data[3])
-    });
+    data = _.map(data, _.parseInt);
+    data = {
+      confirmed: data[3],
+      sent: data[0],
+      received: data[1], 
+      staked: data[2]
+    };
+    res.json(wrapToJsonRPC(data));
   }
 });
 
@@ -47,7 +51,7 @@ router.get('/listunspent/:addr', async (req, res, next) => {
       .value();
 
     data = _.map(data, makeObj);
-    res.json(data);
+    res.json(wrapToJsonRPC(data));
   }
 });
 
