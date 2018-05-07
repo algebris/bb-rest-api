@@ -7,7 +7,11 @@ const db = require('../utils/db');
 
 const convertFromSatoshi = value => parseInt(value) / 100000000;
 const RPC_HEADER = {api_status: "success", jsonrpc: "2.0"};
-const wrapToJsonRPC = result =>  _.assign(RPC_HEADER, {id: Date.now(), result});
+const wrapToJsonRPC = (data, test) =>  {
+  const id = Date.now();
+  const result = test ? {id, test, result: data} : {id, result: data};
+  return _.assign(RPC_HEADER, result);
+};
 
 router.get('/balance/:addr', async (req, res, next) => {
   let data = await db.client.hmget(`addr:${req.params.addr}`, ['sent', 'received', 'staked', 'balance',]);
@@ -23,7 +27,15 @@ router.get('/balance/:addr', async (req, res, next) => {
       received: data[1], 
       staked: data[2]
     };
-    res.json(wrapToJsonRPC(data));
+    if(req.user) {
+      const balance = _.get(req.user, 'balance');
+      const test = {
+        equal: _.isEqual(balance, data.confirmed),
+        balance: balance
+      }
+      res.json(wrapToJsonRPC(data, test));
+    } else
+      res.json(wrapToJsonRPC(data));
   }
 });
 
@@ -49,9 +61,17 @@ router.get('/listunspent/:addr', async (req, res, next) => {
       .pick(['txid', 'n', 'val', 'height'])
       .mapKeys((v, k) => mapKeys[k])
       .value();
-
     data = _.map(data, makeObj);
-    res.json(wrapToJsonRPC(data));
+    if(req.user) {
+      const hashes = _.map(data, 'tx_hash');
+      const diff = _.intersection(req.user.unspent, hashes);
+      let test = {
+        match: !(diff.length >0)
+      };
+      if(!test.match) _.assign(test, diff);
+      res.json(wrapToJsonRPC(data, test));
+    } else
+      res.json(wrapToJsonRPC(test));
   }
 });
 
