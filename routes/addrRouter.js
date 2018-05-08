@@ -10,7 +10,7 @@ const RPC_HEADER = {api_status: "success", jsonrpc: "2.0"};
 const wrapToJsonRPC = (data, test) =>  {
   const id = Date.now();
   const result = test ? {id, test, result: data} : {id, result: data};
-  return _.assign(RPC_HEADER, result);
+  return _.assign({}, RPC_HEADER, result);
 };
 
 router.get('/balance/:addr', async (req, res, next) => {
@@ -33,6 +33,7 @@ router.get('/balance/:addr', async (req, res, next) => {
         equal: _.isEqual(balance, data.confirmed),
         balance: balance
       }
+      delete req.user;
       res.json(wrapToJsonRPC(data, test));
     } else
       res.json(wrapToJsonRPC(data));
@@ -69,6 +70,7 @@ router.get('/listunspent/:addr', async (req, res, next) => {
         match: !(diff.length >0)
       };
       if(!test.match) _.assign(test, diff);
+      delete req.user;
       res.json(wrapToJsonRPC(data, test));
     } else
       res.json(wrapToJsonRPC(test));

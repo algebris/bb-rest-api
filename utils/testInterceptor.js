@@ -8,7 +8,7 @@ const convertToSatoshi = val => parseInt(parseFloat(val).toFixed(8).toString().r
 const getChainzQuery = (method, addr) => {
   const KEY = '279a7ad64ed0';
   let str = `https://chainz.cryptoid.info/bay/api.dws?a=${addr}&q=${method}&key=${KEY}`;
-  if(method == 'unsent')
+  if(method == 'unspent')
     str = `https://chainz.cryptoid.info/bay/api.dws?active=${addr}&q=unspent&key=${KEY}`
   return axios.get(str);
 }
