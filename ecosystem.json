@@ -6,7 +6,8 @@
     "cwd": "/srv/bb-rest-api",
     "out_file": "log/rest-api.stdout.log",
     "env": {
-      "NODE_ENV": "production"
+      "NODE_ENV": "production",
+      "SERVER_PORT": 8081
     }
   }]
 }
