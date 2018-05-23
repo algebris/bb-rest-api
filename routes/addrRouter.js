@@ -73,7 +73,7 @@ router.get('/listunspent/:addr', async (req, res, next) => {
       delete req.user;
       res.json(wrapToJsonRPC(data, test));
     } else
-      res.json(wrapToJsonRPC(test));
+      res.json(wrapToJsonRPC(data));
   }
 });
 
