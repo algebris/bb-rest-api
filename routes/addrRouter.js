@@ -90,14 +90,14 @@ router.get('/height', async (req, res, next) => {
   res.json({height, hash});
 });
 
-router.post('/sendrawtx', async (req, res, next) => {
+router.post('/broadcast', async (req, res, next) => {
   let data = req.body.raw_tx;
   const result = await bc.sendRawTx(data)
     .catch(err => {
       log.error(err);
-      return res.status(500).json({error:true})
+      return res.status(500).json({status:"error", msg:err.message})
     });
-  res.json({data:result});
+  res.json({status:"success", "msg":result});
 });
 
 module.exports = router;
