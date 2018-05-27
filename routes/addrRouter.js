@@ -2,8 +2,11 @@ const _ = require('lodash');
 const express = require('express');
 const router = express.Router();
 const bunyan = require('bunyan');
+const cfg = require('../config');
 const log = bunyan.createLogger({name: 'api.addrRouter'});
 const db = require('../utils/db');
+const BlockChain = require('../utils/blockchain');
+const bc = new BlockChain(cfg.rpc);
 
 const convertFromSatoshi = value => parseInt(value) / 100000000;
 const RPC_HEADER = {api_status: "success", jsonrpc: "2.0"};
@@ -85,6 +88,16 @@ router.get('/height', async (req, res, next) => {
     await db.client.zrank('block-chain', hash) : 0;
     
   res.json({height, hash});
+});
+
+router.post('/sendrawtx', async (req, res, next) => {
+  let data = req.body.raw_tx;
+  const result = await bc.sendRawTx(data)
+    .catch(err => {
+      log.error(err);
+      return res.status(500).json({error:true})
+    });
+  res.json({data:result});
 });
 
 module.exports = router;

@@ -6,8 +6,14 @@
     "cwd": "/srv/bb-rest-api",
     "out_file": "log/rest-api.stdout.log",
     "env": {
-      "NODE_ENV": "production",
+      "NODE_ENV": "development",
       "SERVER_PORT": 8081
+    },
+    "env_production": {
+      "NODE_ENV": "production",
+      "RPC_USER": "bit1b4yRpc",
+      "RPC_PORT": 19913,
+      "RPC_PASSWD": "3SngHrSJrAexX7Y2oK2uwU76dekVAtQ8J8snQM1KEft3"
     }
   }]
 }

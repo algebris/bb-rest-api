@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "axios": "^0.18.0",
+    "bitcoin-core": "^2.0.0",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "bunyan": "^1.8.12",

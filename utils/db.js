@@ -3,11 +3,12 @@ const Promise = require('bluebird');
 const Redis = require('ioredis');
 const bunyan = require('bunyan');
 const log = bunyan.createLogger({name: 'api.db'});
+const cfg = require('../config');
 // const Decimal = require('decimal.js');
 // const {inspect} = require('../utils');
 // const config = require('../config');
 
-const client = new Redis();
+const client = new Redis(cfg.redisUrl);
 
 client.on('error', function error(err) {
   log.error('Redis error', err);
