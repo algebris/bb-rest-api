@@ -90,14 +90,12 @@ router.get('/height', async (req, res, next) => {
   res.json({height, hash});
 });
 
-router.post('/broadcast', async (req, res, next) => {
-  let data = req.body.raw_tx;
-  const result = await bc.sendRawTx(data)
-    .catch(err => {
-      log.error(err);
-      return res.status(500).json({status:"error", msg:err.message})
-    });
-  res.json({status:"success", "msg":result});
+router.get('/broadcast/:rawTx', async (req, res, next) => {
+  const rawTx = req.params.rawTx;
+  if(!rawTx) res.status(500).json({status:"error", msg:"Incorrect TX"});
+  const result = await bc.sendRawTx(rawTx)
+    .catch(err => res.status(500).json({status:"error", msg:err.message}));
+  res.json({status:"success", "tx":result});
 });
 
 module.exports = router;
