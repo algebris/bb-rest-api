@@ -64,6 +64,15 @@ module.exports.pushTxToAddr = (key, txid, obj) => {
   return client.hset(key, txid, obj);
 };
 
+module.exports.getLatestBlock = async () => {
+  let latestHash = await client.zrange('block-chain', -1, -1);
+  const hash = latestHash.shift();
+  if(hash) {
+    const id = await client.zscore('block-chain', hash);
+    return {id: parseInt(id, 10), hash};
+  }
+};
+
 module.exports.spendTxAddr = async (addr, txid) => {
   let utxObj;
   const utx = await client.hget(`addr:utxs:${addr}`, txid);

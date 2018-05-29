@@ -81,13 +81,10 @@ router.get('/listunspent/:addr', async (req, res, next) => {
 });
 
 router.get('/height', async (req, res, next) => {
-  let hash = await db.client.zrange('block-chain', -1, -1);
-  hash = hash.shift() || 0;
+  let hash = await db.getLatestBlock();
+  hash = hash || {};
   
-  const height = hash ?
-    await db.client.zrank('block-chain', hash) : 0;
-    
-  res.json({height, hash});
+  res.json(hash);
 });
 
 router.get('/broadcast/:rawTx', async (req, res, next) => {
@@ -95,6 +92,7 @@ router.get('/broadcast/:rawTx', async (req, res, next) => {
   if(!rawTx) res.status(500).json({status:"error", msg:"Incorrect TX"});
   const result = await bc.sendRawTx(rawTx)
     .catch(err => res.status(500).json({status:"error", msg:err.message}));
+  console.log(result);
   res.json({status:"success", "tx":result});
 });
 
