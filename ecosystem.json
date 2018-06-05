@@ -10,6 +10,7 @@
       "SERVER_PORT": 8081
     },
     "env_production": {
+      "SERVER_PORT": 8081,
       "NODE_ENV": "production",
       "RPC_USER": "bit1b4yRpc",
       "RPC_PORT": 19913,
